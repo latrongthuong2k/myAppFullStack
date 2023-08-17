@@ -1,0 +1,33 @@
+version: 'latest'
+services:
+  mysql-note-database:
+    image: mysql:latest
+    container_name: mysql-container
+    ports:
+      - 3307:3306
+    volumes:
+      - mysql-springboot-data:/var/lib/mysql
+      - mysql-springboot-config-deamond:/etc/mysql/conf.d
+    networks:
+      - backend
+    environment:
+#       DATABASE_HOST: database-container
+       MYSQL_USER: thuong2
+       MYSQL_PASSWORD: thuong191020
+       MYSQL_ROOT_PASSWORD: thuong191020
+       MYSQL_DATABASE: user_app
+  springboot-app-note:
+    image: thuong191020/my-repository:v1.0.1
+    container_name: myapp-container
+    ports:
+      - 8080:8080
+#    volumes:
+#      - ./:/app
+    networks:
+      - backend
+networks:
+  backend:
+    name: app-backend
+volumes:
+  mysql-springboot-data:
+  mysql-springboot-config-deamond:
