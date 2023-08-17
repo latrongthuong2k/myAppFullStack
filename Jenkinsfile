@@ -3,31 +3,19 @@ pipeline {
     agent any
 
     tools { 
-        maven 'my-maven' 
+        maven 'my-docker'
     }
     environment {
         MYSQL_ROOT_LOGIN = credentials('mysql-root-login')
     }
     stages {
 
-        stage('Build with Maven') {
+        stage('pull image') {
             steps {
-                // sh 'mvn --version'
-                // sh 'java -version'
-                sh 'mvn -B -DskipTests clean package'
+               withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/')
+               docker.image(thuong191020/my-repository:v1.0.1).pull()
             }
         }
-
-        stage('Packaging/Pushing imagae') {
-
-            steps {
-                withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
-                    sh 'docker build -t thuong191020/my-repository:v1.0.1 .'
-                    sh 'docker push thuong191020/my-repository:v1.0.1'
-                }
-            }
-        }
-
         stage('Clean and Deploy') {
             steps {
                 sh 'docker-compose -f compose.yaml down --remove-orphans'
